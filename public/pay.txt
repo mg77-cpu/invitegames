@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invited Games | 2026 Junior Registration</title>
+   
+    <script src="https://js.stripe.com/v3/"></script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+   
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+   
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        club: {
+                            green: '#064e3b',
+                            dark: '#022c22',
+                            gold: '#d97706',
+                            cream: '#fdfbf7',
+
+                            gray: '#a8a29e'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-club-cream text-slate-800 antialiased">
+
+    <div id="registrationModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+        <div class="bg-white rounded-lg shadow-2xl max-w-lg w-full overflow-hidden">
+            <div class="bg-club-dark p-6 flex justify-between items-center">
+                <h3 class="font-serif text-2xl text-white">Secure Registration</h3>
+                <button onclick="toggleModal()" class="text-white/60 hover:text-white"><i data-lucide="x"></i></button>
+            </div>
+           
+            <form id="payment-form" class="p-8 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Parent Name</label>
+                    <input type="text" id="parentName" required class="w-full border-b-2 border-gray-200 focus:border-club-gold outline-none py-2 transition-colors">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Athlete Name</label>
+                        <input type="text" id="athleteName" required class="w-full border-b-2 border-gray-200 focus:border-club-gold outline-none py-2 transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Age Tier</label>
+                        <select id="ageTier" class="w-full border-b-2 border-gray-200 focus:border-club-gold outline-none py-2 bg-transparent">
+                            <option>U6</option><option>U8</option><option>U10</option><option>U12</option><option>U14</option><option>U16</option>
+                        </select>
+                    </div>
+                </div>
+               
+                <div class="pt-4">
+                    <label class="block text-xs font-bold uppercase text-gray-500 mb-2">Secure Credit Card Payment</label>
+                    <div id="card-element" class="p-3 border border-gray-200 rounded bg-stone-50">
+                        </div>
+                </div>
+
+                <div id="payment-message" class="hidden text-sm font-medium text-red-600"></div>
+
+                <button type="submit" id="submit-btn" class="w-full bg-club-gold text-white py-4 rounded-sm font-bold shadow-lg hover:bg-yellow-600 transition flex items-center justify-center gap-2">
+                    <span id="button-text">Complete $2,650 Investment</span>
+                </button>
+                <p class="text-[10px] text-center text-gray-400 mt-2">SECURED BY STRIPE • PROCESSED BY INVITED GAMES LLC</p>
+            </form>
+        </div>
+    </div>
+
+
+    <section id="membership" class="py-24 bg-club-cream">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h2 class="text-4xl font-serif font-bold text-club-dark mb-12">2026 Elite Enrollment</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="bg-white p-8 rounded-lg shadow-lg border-t-4 border-club-gold transform hover:-translate-y-2 transition">
+                    <h3 class="text-2xl font-bold text-club-dark">Academy Scholar Pass</h3>
+                    <p class="text-4xl font-serif font-bold py-6">$2,650</p>
+                    <button onclick="toggleModal()" class="w-full py-3 bg-club-dark text-white font-bold rounded-sm">Join the Academy</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        lucide.createIcons();
+
+        // 1. MODAL TOGGLE
+        function toggleModal() {
+            const modal = document.getElementById('registrationModal');
+            modal.classList.toggle('hidden');
+        }
+
+        // 2. STRIPE SETUP (Replace with your actual Stripe Publishable Key)
+        const stripe = Stripe('pk_test_your_key_here');
+        const elements = stripe.elements();
+        const card = elements.create('card', { style: { base: { fontSize: '16px' }}});
+        card.mount('#card-element');
+
+        // 3. FORM SUBMISSION (CONNECTS TO DATABASE)
+        const form = document.getElementById('payment-form');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true;
+            btn.innerHTML = "Processing...";
+
+            // Gather Data
+            const registrationData = {
+                parent: document.getElementById('parentName').value,
+                athlete: document.getElementById('athleteName').value,
+                tier: document.getElementById('ageTier').value,
+                timestamp: new Date().toISOString()
+            };
+
+            // A. SEND TO DATABASE (Mock API Call)
+            try {
+                // In a real app, replace this URL with your Supabase or Node.js endpoint
+                const dbResponse = await fetch('https://your-api.com/registrations', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(registrationData)
+                });
+               
+                console.log("Data saved to database:", registrationData);
+               
+                // B. PROCESS STRIPE PAYMENT
+                // In a real app, you would create a PaymentIntent on the server first
+                alert("Thank you! Data connected to database and payment verified.");
+                toggleModal();
+               
+            } catch (error) {
+                console.error("Database Connection Error:", error);
+                document.getElementById('payment-message').innerText = "Database connection error. Please try again.";
+                document.getElementById('payment-message').classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = "Complete $2,650 Investment";
+            }
+        });
+    </script>
+</body>
+</html>

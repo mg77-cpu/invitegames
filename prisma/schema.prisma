@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id // Matches Clerk User ID
+  email     String   @unique
+  name      String?
+  payments  Payment[]
+  createdAt DateTime @default(now())
+}
+
+model Payment {
+  id          String   @id @default(cuid())
+  amount      Int
+  status      String // e.g., 'succeeded', 'pending'
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  parentName  String?
+  athleteName String?
+  ageTier     String?
+  createdAt   DateTime @default(now())
+}
