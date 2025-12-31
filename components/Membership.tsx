@@ -4,12 +4,21 @@ import { Check } from "lucide-react";
 import { useState } from "react";
 import SubscriptionWrapper from "./SubscriptionWrapper";
 import PaymentModal from "./PaymentModal";
+import { useAuth, useSignIn } from "@clerk/nextjs";
 
 export default function Membership() {
+    const { userId } = useAuth();
+    const { signIn } = useSignIn();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedPlan, setSelectedPlan] = useState<{ name: string; price: number }>({ name: "", price: 0 });
 
     const openModal = (name: string, price: number) => {
+        if (!userId) {
+            // Redirect to top and show a clear message
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            alert("Please sign in using the 'Member Portal' button at the top to complete your registration.");
+            return;
+        }
         setSelectedPlan({ name, price });
         setIsModalOpen(true);
     };
