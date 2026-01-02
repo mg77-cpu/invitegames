@@ -3,15 +3,17 @@
 import { useState } from "react";
 import { useStripe, useElements, PaymentElement } from "@stripe/react-stripe-js";
 import { X } from "lucide-react";
+import { getPlanByName } from "@/lib/plans";
 
 interface PaymentModalProps {
     isOpen: boolean;
     onClose: () => void;
     planName: string;
     price: number;
+    existingSubscriptions?: any[];
 }
 
-export default function PaymentModal({ isOpen, onClose, planName, price }: PaymentModalProps) {
+export default function PaymentModal({ isOpen, onClose, planName, price, existingSubscriptions = [] }: PaymentModalProps) {
     const stripe = useStripe();
     const elements = useElements();
     const [loading, setLoading] = useState(false);
@@ -21,17 +23,27 @@ export default function PaymentModal({ isOpen, onClose, planName, price }: Payme
     const [athleteName, setAthleteName] = useState("");
     const [ageTier, setAgeTier] = useState("U6");
 
+    const duplicate = existingSubscriptions.find(
+        sub => 
+            athleteName && 
+            sub.athleteName?.toLowerCase() === athleteName.toLowerCase() && 
+            sub.ageTier === ageTier &&
+            sub.planName === planName
+    );
+
     if (!isOpen) return null;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!stripe || !elements) {
+        if (!stripe || !elements || duplicate) {
             return;
         }
 
         setLoading(true);
         setErrorMessage(null);
+
+        const plan = getPlanByName(planName);
 
         try {
             const { error: submitError } = await elements.submit();
@@ -48,6 +60,7 @@ export default function PaymentModal({ isOpen, onClose, planName, price }: Payme
                     amount: price,
                     metadata: {
                         planName,
+                        durationMonths: plan?.durationMonths || 3, // Fallback to 3 if not found
                         parentName,
                         athleteName,
                         ageTier,
@@ -90,7 +103,7 @@ export default function PaymentModal({ isOpen, onClose, planName, price }: Payme
     };
 
     return (
-        <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/60 backdrop-blur-md">
+        <div className="fixed inset-0 z-100 overflow-y-auto bg-black/60 backdrop-blur-md">
             <div className="flex min-h-full items-center justify-center p-4 py-12">
                 <div className="bg-white rounded-lg shadow-2xl max-w-lg w-full relative">
                     {/* Header */}
@@ -144,11 +157,11 @@ export default function PaymentModal({ isOpen, onClose, planName, price }: Payme
                             </div>
 
                             {/* Stripe Element */}
-                            <div className="pt-4">
+                            <div className={`pt-4 ${duplicate ? 'opacity-50 pointer-events-none' : ''}`}>
                                 <label className="block text-xs font-bold uppercase text-gray-500 mb-2">
                                     Select Payment Method
                                 </label>
-                                <div className="p-3 border border-gray-200 rounded bg-stone-50 max-h-[350px] overflow-y-auto">
+                                <div className="p-3 border border-gray-200 rounded bg-stone-50 max-h-87.5 overflow-y-auto">
                                     <PaymentElement
                                         options={{
                                             layout: {
@@ -159,18 +172,21 @@ export default function PaymentModal({ isOpen, onClose, planName, price }: Payme
                                 </div>
                             </div>
 
-                            {errorMessage && (
+                            {(errorMessage || duplicate) && (
                                 <div className="text-sm font-medium text-red-600 bg-red-50 p-2 rounded">
-                                    {errorMessage}
+                                    {duplicate 
+                                        ? `${athleteName} is already registered for the ${planName} (${ageTier} tier).`
+                                        : errorMessage
+                                    }
                                 </div>
                             )}
 
                             <button
                                 type="submit"
-                                disabled={loading || !stripe}
+                                disabled={loading || !stripe || !!duplicate}
                                 className="w-full bg-club-gold text-white py-4 rounded-sm font-bold shadow-lg hover:bg-yellow-600 transition flex items-center justify-center gap-2 disabled:opacity-50"
                             >
-                                {loading ? "Processing..." : `Complete $${(price / 100).toLocaleString()} Investment`}
+                                {loading ? "Processing..." : duplicate ? "Already Registered" : `Complete $${(price / 100).toLocaleString()} Investment`}
                             </button>
                             <p className="text-[10px] text-center text-gray-400 mt-2">
                                 SECURED BY STRIPE • PROCESSED BY INVITED GAMES LLC
