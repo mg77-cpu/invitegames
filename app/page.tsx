@@ -17,7 +17,13 @@ export default function Home() {
       <Hero />
       <SportsGrid />
       <Schedule />
-      <Membership />
+      <Suspense fallback={
+        <div className="py-24 bg-club-cream flex flex-col items-center justify-center">
+          <div className="w-8 h-8 border-4 border-club-gold border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      }>
+        <Membership />
+      </Suspense>
       <Footer />
     </main>
   );
