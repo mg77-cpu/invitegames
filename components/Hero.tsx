@@ -4,11 +4,11 @@ export default function Hero() {
     return (
         <div className="relative bg-club-dark overflow-hidden pt-20">
             <div className="absolute inset-0">
-                <div className="absolute inset-0 bg-gradient-to-r from-club-dark via-club-green to-club-dark opacity-90"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-club-dark via-club-dark/80 to-club-dark opacity-90"></div>
                 <div
                     className="absolute inset-0 opacity-5"
                     style={{
-                        backgroundImage: "radial-gradient(#d97706 1px, transparent 1px)",
+                        backgroundImage: "radial-gradient(#fbbf24 1px, transparent 1px)",
                         backgroundSize: "30px 30px",
                     }}
                 ></div>
