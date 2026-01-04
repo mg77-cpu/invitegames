@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Trophy } from "lucide-react";
 import { SignInButton, SignedIn, SignedOut, UserButton, useAuth } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
+import PillNav from "./ui/PillNav";
 
 export default function Navbar() {
     const { userId, isLoaded } = useAuth();
@@ -27,7 +28,7 @@ export default function Navbar() {
     };
 
     return (
-        <nav className="fixed w-full z-50 bg-club-dark/95 backdrop-blur-sm border-b border-club-gold/20 transition-all duration-300">
+        <nav className="fixed w-full z-50 bg-club-dark/40 backdrop-blur-md border-b border-club-gold/20 transition-all duration-300">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-20">
                     <div
@@ -40,17 +41,15 @@ export default function Navbar() {
                         </span>
                     </div>
                     <div className="hidden md:block">
-                        <div className="ml-10 flex items-baseline space-x-8">
-                            {["Philosophy", "Sports", "Schedule", "Membership"].map((item) => (
-                                <button
-                                    key={item}
-                                    onClick={() => scrollTo(item.toLowerCase())}
-                                    className="font-sans text-sm font-medium text-gray-300 hover:text-white transition-colors"
-                                >
-                                    {item === "Sports" ? "Junior Leagues" : item === "Schedule" ? "Fixtures" : item}
-                                </button>
-                            ))}
-                        </div>
+                        <PillNav 
+                            items={[
+                                { label: "Philosophy", id: "philosophy" },
+                                { label: "Junior Leagues", id: "sports" },
+                                { label: "Fixtures", id: "schedule" },
+                                { label: "Membership", id: "membership" }
+                            ]}
+                            onItemClick={scrollTo}
+                        />
                     </div>
                     <div className="hidden md:flex items-center gap-4">
                         <SignedOut>

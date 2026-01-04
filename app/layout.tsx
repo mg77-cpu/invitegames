@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Inter, Playfair_Display, Cormorant_Garamond, Montserrat, Caveat } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
+import SmoothScroll from "@/components/SmoothScroll";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -10,6 +12,23 @@ const inter = Inter({
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
+  subsets: ["latin"],
+});
+
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+});
+
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+});
+
+const caveat = Caveat({
+  variable: "--font-caveat",
   subsets: ["latin"],
 });
 
@@ -27,9 +46,12 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" className="scroll-smooth">
         <body
-          className={`${inter.variable} ${playfair.variable} antialiased bg-club-cream text-slate-800`}
+          className={`${inter.variable} ${playfair.variable} ${cormorant.variable} ${montserrat.variable} ${caveat.variable} antialiased bg-club-cream text-slate-800`}
         >
-          {children}
+          <Toaster position="top-center" richColors />
+          <SmoothScroll>
+            {children}
+          </SmoothScroll>
         </body>
       </html>
     </ClerkProvider>
