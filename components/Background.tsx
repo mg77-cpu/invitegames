@@ -31,9 +31,9 @@ const Background: React.FC = () => {
         transition={{
           duration: 20,
           repeat: Infinity,
-          ease: "easeInOut"
+          ease: "linear" // Changed to linear for more consistent performance
         }}
-        className="absolute top-[10%] right-[10%] w-96 h-96 rounded-full bg-brand-green-700/10 blur-[80px] z-[1]"
+        className="absolute top-[10%] right-[10%] w-96 h-96 rounded-full bg-brand-green-700/10 blur-[80px] z-[1] will-change-transform"
       />
       
       <motion.div
@@ -44,10 +44,10 @@ const Background: React.FC = () => {
         transition={{
           duration: 25,
           repeat: Infinity,
-          ease: "easeInOut",
+          ease: "linear",
           delay: 2
         }}
-        className="absolute bottom-[10%] left-[5%] w-[500px] h-[500px] rounded-full bg-brand-green-900/20 blur-[100px] z-[1]"
+        className="absolute bottom-[10%] left-[5%] w-[500px] h-[500px] rounded-full bg-brand-green-900/20 blur-[100px] z-[1] will-change-transform"
       />
 
       {/* Floating Icons */}
@@ -85,22 +85,22 @@ interface FloatingIconProps {
 const FloatingIcon: React.FC<FloatingIconProps> = ({ icon: Icon, top, left, right, bottom, delay, size, rotate }) => {
   return (
     <motion.div
-      className="absolute"
+      className="absolute will-change-transform"
       style={{ top, left, right, bottom }}
       initial={{ opacity: 0, rotate: rotate }}
       animate={{ 
         opacity: [0.3, 0.6, 0.3],
-        y: [0, -20, 0],
-        rotate: [rotate, rotate + 10, rotate]
+        y: [0, -10, 0], // Reduced movement range
+        rotate: [rotate, rotate + 5, rotate] // Reduced rotation range
       }}
       transition={{
-        duration: 8,
+        duration: 10, // Increased duration for slower, smoother motion
         delay: delay,
         repeat: Infinity,
-        ease: "easeInOut"
+        ease: "linear"
       }}
     >
-      <Icon size={size} />
+      <Icon size={size} strokeWidth={1.5} />
     </motion.div>
   );
 };

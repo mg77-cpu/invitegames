@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display, Cormorant_Garamond, Montserrat, Caveat } from "next/font/google";
+import { Inter, Playfair_Display, Cormorant_Garamond, Montserrat, Caveat, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import SmoothScroll from "@/components/SmoothScroll";
@@ -32,6 +32,12 @@ const caveat = Caveat({
   subsets: ["latin"],
 });
 
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
+  subsets: ["latin"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Invited Games | Junior Country Club Leagues",
   description: "Premier youth sports leagues exclusively for Junior Members.",
@@ -46,7 +52,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" className="scroll-smooth">
         <body
-          className={`${inter.variable} ${playfair.variable} ${cormorant.variable} ${montserrat.variable} ${caveat.variable} antialiased bg-club-cream text-slate-800`}
+          className={`${inter.variable} ${playfair.variable} ${cormorant.variable} ${montserrat.variable} ${caveat.variable} ${dmSans.variable} antialiased bg-club-cream text-slate-800`}
         >
           <Toaster position="top-center" richColors />
           <SmoothScroll>
